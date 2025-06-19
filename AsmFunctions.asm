@@ -1,6 +1,8 @@
 section .data
 c4 dq 4.0
-с1 dq 1.0
+c2 dq 2.0
+c1 dq 1.0
+ln2 dq 0.69314718056
 
 section .text
 global f1, f2, f3, test1, test2, test3
@@ -15,11 +17,11 @@ f1: ; f(x) = 1 + 4/(x^2 + 1)
 
     fmul st0, st0
 
-    fadd qword [с1] 
+    fadd qword [c1] 
 
     fld qword [c4]
     fdivrp st1, st0
-    fadd qword [с1]
+    fadd qword [c1]
     
     leave
     ret
@@ -43,10 +45,16 @@ f3: ; f(x) = 2^(-x)
 
     finit
     fld qword [ebp+8]
+    fld qword [c2]
+    fyl2x
     fchs
-    fld1
+    fld st0
+    frndint
+    fsub st1, st0
+    fxch st1
+    f2xm1
+    fadd qword [c1]
     fscale
-    fstp st1
 
     leave
     ret
@@ -56,9 +64,9 @@ test1: ; f(x) = 4 + x
     mov ebp, esp
     
     finit
-    fld qword [c4]
     fld qword [ebp+8]
-    faddp
+    fld qword [c4]
+    faddp st1, st0
     
     leave
     ret
